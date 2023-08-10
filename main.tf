@@ -36,30 +36,63 @@ resource "aws_s3_bucket_acl" "example" {
     acl = "public-read"
 }
 
-#Uploading index file in a bucket
-resource "aws_s3_bucket" "index" {
+#Uploading index file in a bucket (Object)
+resource "aws_s3_object" "index" {
     bucket = aws_s3_bucket.mybucket.id
     key = "index.html"
-    source = "index.html"
+    source = "A:\\Devops\\Terraform-S3\\index.html"
     acl = "public-read"
     content_type = "text/html"
-  
 }
 
-#Uploading error file in a bucket
-resource "aws_s3_bucket" "error" {
+#Uploading error file in a bucket (Object)
+resource "aws_s3_object" "error" {
     bucket = aws_s3_bucket.mybucket.id
     key = "error.html"
-    source = "error.html"
-    acl = "public-read"  
+    source = "A:\\Devops\\Terraform-S3\\error.html"
+    acl = "public-read"   
 }
 
-#Uplaoding image folder
-resource "aws_s3_bucket" "image" {
-    for_each = fileset("images/","*")
+#Uplaoding image folder (Object)
+resource "aws_s3_object" "image" {
+    for_each = fileset("A:\\Devops\\Terraform-S3\\images\\","*")
     bucket = aws_s3_bucket.mybucket.id
     key = each.value
-    source = "images/${each.value}"
-    etag = filemd5("images/${each.value}")
-  
+    source = "A:\\Devops\\Terraform-S3\\images\\${each.value}"
+    etag = filemd5("A:\\Devops\\Terraform-S3\\images\\${each.value}")
+    acl = "public-read"
+}
+
+#Uploading js folder (Object)
+resource "aws_s3_object" "js" {
+    bucket = aws_s3_bucket.mybucket.id
+    key = "script.js"
+    source = "A:\\Devops\\Terraform-S3\\script.js"
+    acl = "public-read"
+    content_type = "text/javascript"
+   
+}
+
+#Uploading css folder (Object)
+resource "aws_s3_object" "css" {
+    bucket = aws_s3_bucket.mybucket.id
+    key = "style.css"
+    source = "A:\\Devops\\Terraform-S3\\style.css"
+    acl = "public-read"
+    content_type = "text/css"
+}
+
+#Website Hosting
+resource "aws_s3_bucket_website_configuration" "website" {
+    bucket = aws_s3_bucket.mybucket.id
+    index_document {
+      suffix = "index.html"
+
+    }
+    
+    error_document {
+      key  = "error.html"
+    }
+
+    depends_on = [ aws_s3_bucket_acl.example ]
 }
