@@ -1,5 +1,5 @@
 variable "bucket" {
-    default = "terr-bucket"
+    default = "bucket-terraform-nix"
     
   
 }
