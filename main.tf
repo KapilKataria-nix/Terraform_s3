@@ -36,16 +36,30 @@ resource "aws_s3_bucket_acl" "example" {
     acl = "public-read"
 }
 
-resource "aws_s3_bucket_website_configuration" "example" {
-
-    bucket = aws_s3_bucket.mybucket
-
-    index_document {
-      suffix = "index.html"
-    }
+#Uploading index file in a bucket
+resource "aws_s3_bucket" "index" {
+    bucket = aws_s3_bucket.mybucket.id
+    key = "index.html"
+    source = "index.html"
+    acl = "public-read"
+    content_type = "text/html"
   
 }
 
+#Uploading error file in a bucket
+resource "aws_s3_bucket" "error" {
+    bucket = aws_s3_bucket.mybucket.id
+    key = "error.html"
+    source = "error.html"
+    acl = "public-read"  
+}
 
-
-
+#Uplaoding image folder
+resource "aws_s3_bucket" "image" {
+    for_each = fileset("images/","*")
+    bucket = aws_s3_bucket.mybucket.id
+    key = each.value
+    source = "images/${each.value}"
+    etag = filemd5("images/${each.value}")
+  
+}
